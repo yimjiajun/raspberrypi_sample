@@ -1,5 +1,17 @@
 # GPIO Driver
 
+# Register
+
+---
+
+In 5.2. Register View from [raspi-4b-bcm2711](https://datasheets.raspberrypi.com/bcm2711/bcm2711-peripherals.pdf)
+
+The GPIO has the following registers. All accesses are assumed to be 32-bit. The GPIO register base address is **0x7e200000**.
+
+# Experiment
+
+----
+
 <br>
 
 1. Install module

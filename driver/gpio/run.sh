@@ -2,6 +2,8 @@
 
 SAMPLE_GPIO_DRIVER="sample_gpio_driver"
 SAMPLE_GPIO_PROC="sample-gpio"
+GPIO_PIN="12"
+GPIO_LVL="0"
 dmesg_prev_line="$(dmesg | wc -l)"
 
 display_tittle(){
@@ -58,20 +60,20 @@ display_kernel_message
 
 display_tittle "Write procfs file"
 
-WR_PROC_MSG="Hello World"
+WR_PROC_MSG="$GPIO_PIN,$GPIO_LVL"
 echo $WR_PROC_MSG ; echo $WR_PROC_MSG > /proc/"$SAMPLE_GPIO_PROC"
 
 display_tittle "Read procfs file"
 
 cat /proc/"$SAMPLE_GPIO_PROC"
 
-display_tittle "Remove Module"
-
-sudo rmmod $SAMPLE_GPIO_DRIVER
-
-lsmod | grep "$SAMPLE_GPIO_DRIVER" -B 2 -A 2
-
-display_kernel_message
+# display_tittle "Remove Module"
+#
+# sudo rmmod $SAMPLE_GPIO_DRIVER
+#
+# lsmod | grep "$SAMPLE_GPIO_DRIVER" -B 2 -A 2
+#
+# display_kernel_message
 
 display_tittle "Clean"
 
