@@ -1,6 +1,8 @@
 #!/bin/bash
 
 SAMPLE_GPIO_DRIVER="sample_gpio_driver"
+SAMPLE_GPIO_PROC="sample-gpio"
+dmesg_prev_line="$(dmesg | wc -l)"
 
 display_tittle(){
 	display_output="$1"
@@ -23,7 +25,8 @@ display_tittle(){
 
 display_kernel_message() {
 	display_tittle "Kernel Message (printk)"
-	dmesg | tail -n $((1 + $(dmesg | wc -l) - $(dmesg | grep -n "$SAMPLE_GPIO_DRIVER" | cut -f 1 -d ':')))
+	dmesg | tail -n $(($(dmesg | wc -l) - $dmesg_prev_line))
+	dmesg_prev_line="$(dmesg | wc -l)"
 }
 
 display_tittle "Makefile"
@@ -37,21 +40,34 @@ if ! [[ -f "${SAMPLE_GPIO_DRIVER}.ko" ]]; then
 	exit 1
 fi
 
-sudo insmod sample_gpio_driver.ko
+if [[ $(lsmod | grep -c "$SAMPLE_GPIO_DRIVER") -ne 0 ]]; then
+	sudo rmmod $SAMPLE_GPIO_DRIVER
+fi
+
+sudo insmod ${SAMPLE_GPIO_DRIVER}.ko
 
 display_tittle "List of Modules"
 
 lsmod | grep "$SAMPLE_GPIO_DRIVER" -B 2 -A 2
 
-display_tittle "Sample Gpio driver being installed"
+display_tittle "List of procfs files"
+
+ls -l /proc | grep "$SAMPLE_GPIO_PROC" -B 1 -A 1
 
 display_kernel_message
 
+display_tittle "Write procfs file"
+
+WR_PROC_MSG="Hello World"
+echo $WR_PROC_MSG ; echo $WR_PROC_MSG > /proc/"$SAMPLE_GPIO_PROC"
+
+display_tittle "Read procfs file"
+
+cat /proc/"$SAMPLE_GPIO_PROC"
+
 display_tittle "Remove Module"
 
-sudo rmmod sample_gpio_driver
-
-display_tittle "List of Modules"
+sudo rmmod $SAMPLE_GPIO_DRIVER
 
 lsmod | grep "$SAMPLE_GPIO_DRIVER" -B 2 -A 2
 
